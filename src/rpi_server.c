@@ -1,3 +1,4 @@
+#include "tcpserver.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -9,8 +10,6 @@
 #include <syslog.h>
 #include <signal.h>
 
-#define PORT "54321"
-#define BUFFER_SIZE 1024
 
 static void sigchild_handler(int sig){
     int status;

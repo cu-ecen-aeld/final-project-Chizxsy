@@ -1,3 +1,4 @@
+#include "tcpclient.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -6,11 +7,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <syslog.h>
-
-#define PORT "54321"
-#define BUFFER_SIZE 1024
-
-
 
 
 int send_data(int sockfd, const char *filename){
