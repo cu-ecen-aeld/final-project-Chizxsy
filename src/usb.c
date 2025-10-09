@@ -1,9 +1,10 @@
-#include <terminos.h>
+#include <termios.h>
 #include <stdio.h>
-#include <unstd.h>
-#include <fnctl.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <syslog.h>
+#include <string.h>
 
 /* Right out of Steven's */
 ssize_t serial_writen(int fd, const void *vptr, size_t n)
@@ -50,6 +51,7 @@ int main(int argc, char *argv[]){
         return -1;
     }
 
+    // get current attributes
     if (tcgetattr(serial_port, &tty) != 0){
         syslog(LOG_ERR, "Failed to store attributes");
         close(serial_port);
@@ -73,8 +75,8 @@ int main(int argc, char *argv[]){
     tty.c_cc[VMIN] = 0;
     tty.c_cc[VTIME] = 10;
     
-    // get attributes now
-    if (tcgetattr(serial_port, TCSANOW, &tty) != 0){
+    // set attributes now
+    if (tcsetattr(serial_port, TCSANOW, &tty) != 0){
             syslog(LOG_ERR, "Failed to store updated attributes");
             close(serial_port);
             return -1;
@@ -86,7 +88,7 @@ int main(int argc, char *argv[]){
     // ----- for testing -----
     // report settings with M503
     char *gcode_cmd = "M503\n";
-    syslog(LOG_INFO, "Writing gcode command: %s\n", gcode_cmd)
+    syslog(LOG_INFO, "Writing gcode command: %s\n", gcode_cmd);
     serial_writen(serial_port, gcode_cmd, strlen(gcode_cmd));
 
     // ----- read response -----
@@ -112,7 +114,7 @@ int main(int argc, char *argv[]){
         printf("Printer Response: \n%s\n", read_buffer);
     } else {
         syslog(LOG_ERR, "Failed to read from printer");
-        printf("Failed to read fom printer")
+        printf("Failed to read fom printer");
     }
 
     close(serial_port);
