@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LDD
+	bool "ldd"
+	help
+		Kernel modules from the ldd3 repository merged into assignment 7, including scull and misc-module drivers.
