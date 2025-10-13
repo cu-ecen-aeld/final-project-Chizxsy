@@ -1,1 +1,3 @@
-make cleandist
+cd buildroot/
+
+make distclean
