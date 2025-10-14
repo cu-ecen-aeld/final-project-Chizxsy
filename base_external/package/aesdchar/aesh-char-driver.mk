@@ -20,8 +20,9 @@ define AESDCHAR_INSTALL_TARGET_CMDS
 
 	$(INSTALL) -m 0755 $(@D)/$(AESDCHAR_MODULE_SUBDIRS)/aesdchar_load $(TARGET_DIR)/usr/bin
 	$(INSTALL) -m 0755 $(@D)/$(AESDCHAR_MODULE_SUBDIRS)/aesdchar_unload $(TARGET_DIR)/usr/bin
-endef
 
+    	$(INSTALL) -m 0644 $(@D)/$(AESDCHAR_MODULE_SUBDIRS)/aesdchar.ko $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/
+endef
 
 $(eval $(kernel-module))
 
