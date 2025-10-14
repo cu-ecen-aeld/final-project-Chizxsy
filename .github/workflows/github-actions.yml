@@ -1,6 +1,4 @@
 name: assignment-test
-on:
-  workflow_dispatch:
 
 jobs:
   full-test:
@@ -16,12 +14,6 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Fix root SSH known_hosts
-        run: |
-          sudo mkdir -p /root/.ssh
-          sudo ssh-keygen -f "/root/.ssh/known_hosts" -R github.com || true
-          sudo ssh-keyscan github.com | sudo tee -a /root/.ssh/known_hosts
-          sudo chmod 600 /root/.ssh/known_hosts
       - name: Configure SSH to ignore host key changes
         run: |
           mkdir -p $HOME/.ssh
