@@ -12,6 +12,11 @@ jobs:
         timeout-minutes: 240
         steps:
           - uses: actions/checkout@v2
+          - name: Install Buildroot dependencies
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y sed make binutils build-essential gcc g++ bash patch gzip bzip2 perl \
+                tar cpio unzip rsync file bc wget python3 git libncurses5-dev
 
           - uses: webfactory/ssh-agent@v0.5.3
             with:
