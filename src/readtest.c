@@ -6,10 +6,11 @@
 #include <syslog.h>
 #include <string.h>
 #include <time.h>
+#include <sys/ioctl.h>
 
 #define BUFFER_SIZE 1024
 
-int printer_startup(int serial_port, int timeout_sec) {
+int printer_startup(int serial_port, int timeout_sec, const char *dev_path) {
     char buffer[BUFFER_SIZE];
     memset(buffer, 0, sizeof(buffer));
     int total_read = 0;
@@ -21,6 +22,7 @@ int printer_startup(int serial_port, int timeout_sec) {
 
     while ((time(NULL) - start_time) < timeout_sec) {
         memset(buffer, 0, sizeof(buffer));
+        printf("Reading from %s...\n", dev_path);
         read_serial = read(serial_port, buffer, sizeof(buffer) - 1);
 
         if (read_serial > 0) {
@@ -48,6 +50,7 @@ int printer_startup(int serial_port, int timeout_sec) {
 int main(int argc, char *argv[]){
 
     struct termios tty;
+    int dtr = TIOCM_DTR;
 
     // open syslog logging
     openlog("PrintrBoardUSB", LOG_PID, LOG_USER);
@@ -90,8 +93,8 @@ int main(int argc, char *argv[]){
     tty.c_cflag |= CS8;
 
     // sets connection timeout to 10 sec
-    tty.c_cc[VMIN] = 0;
-    tty.c_cc[VTIME] = 10;
+    tty.c_cc[VMIN] = 1;
+    tty.c_cc[VTIME] = 0;
     
     // set attributes now
     if (tcsetattr(serial_port, TCSANOW, &tty) != 0){
@@ -100,12 +103,17 @@ int main(int argc, char *argv[]){
             return -1;
     }
 
-    tcflush(serial_port, TCIOFLUSH); 
+
+    ioctl(serial_port, TIOCMBIC, &dtr);  // clear DTR
+    usleep(100000);                      // 100ms delay
+    ioctl(serial_port, TIOCMBIS, &dtr);  // set DTR again
+
+    sleep(1);
 
     char startup_buffer[BUFFER_SIZE];
     memset(startup_buffer, '\n', sizeof(startup_buffer));
 
-    if(printer_startup(serial_port, 10) != 0){
+    if(printer_startup(serial_port, 10, dev_path) != 0){
         syslog(LOG_ERR,"Failed to monitor startup");
         return -1;
     }
