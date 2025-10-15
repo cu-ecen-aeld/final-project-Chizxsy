@@ -1,9 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-TARGET = usb
+TARGET = readtest
 
-SRCS = usb.c
+SRCS = readtest.c
 
 # generate object files from source
 OBJS = $(SRCS:.c=.o)
