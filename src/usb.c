@@ -150,9 +150,9 @@ int main(int argc, char *argv[]){
     tcflush(serial_port, TCIOFLUSH); 
 
     char startup_buffer[BUFFER_SIZE];
-    memset(startup_buffer, '\n', sizeof(startup_buffer));
+    memset(startup_buffer, '\0', sizeof(startup_buffer));
 
-    if(printer_startup(serial_port, startup_buffer, sizeof(startup_buffer), "SD Card ok", 10) != 0){
+    if(printer_startup(serial_port, startup_buffer, sizeof(startup_buffer), "SD card ok", 10) != 0){
         syslog(LOG_ERR,"Failed to monitor startup");
         return -1;
     }
