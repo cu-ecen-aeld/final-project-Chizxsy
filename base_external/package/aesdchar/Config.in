@@ -1,4 +1,4 @@
 config BR2_PACKAGE_AESD-CHAR-DRIVER
-        bool "aesd-char-driver"
+        bool "aesdchar"
         help
 		Loads and unloads aesdchar from kernel space
