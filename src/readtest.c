@@ -15,21 +15,16 @@ int printer_startup(int serial_port, int timeout_sec){
     int total_read = 0;
     int read_serial = 0;
     time_t start_time = time(NULL);
+    time_t time1, time2;
 
-    // On startup Prusa prints to the console:
-    /* start
-    echo: 3.13.3-7094
-    SpoolJoin is Off
-    echo: Last Updated: Feb 27 2024 18:21:24 | Author: (none, default config)
-    echo: Free Memory: 2809 
-    PlannerBufferBytes: 1760
-    echo:Stored settings retrieved
-    adc_init
-    Sending 0xFF
-    echo:SD card ok */
+    time(&time1);
+
+    printf("----- Welcome to printer startup -----\n");
+    printf("Start time: %s\n", ctime(&time1));
+
 
     while ((time(NULL) - start_time) < timeout_sec){
-        read_serial = read(serial_port, &buffer[total_read], sizeof(buffer) - total_read - 1);
+        read_serial = read(serial_port, buffer, sizeof(buffer));
         if (read_serial > 0){
             total_read += read_serial;
             printf("--- Printer Startup Output ---\n");
@@ -38,6 +33,10 @@ int printer_startup(int serial_port, int timeout_sec){
         }
     }
     syslog(LOG_ERR, "Waiting for printer to become ready");
+    time(&time2);
+    printf("----- End of printer startup -----\n");
+    printf("Start time: %s\n", ctime(&time2));
+
     return -1;
 
 }
