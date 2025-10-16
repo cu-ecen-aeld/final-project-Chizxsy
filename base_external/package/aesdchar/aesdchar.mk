@@ -4,18 +4,12 @@
 #
 ##############################################################
 
-AESDCHAR_VERSION = 3830aad39983e36323af8a0eb5c65adf8c6722ea
+AESDCHAR_VERSION = e607d54a534d9ae7fc95f190fe3d089c9a97df1d
 AESDCHAR_SITE = git@github.com:cu-ecen-aeld/assignments-3-and-later-Chizxsy.git
 AESDCHAR_SITE_METHOD = git
 AESDCHAR_GIT_SUBMODULES = YES
 
 AESDCHAR_MODULE_SUBDIRS = aesd-char-driver
-
-
-define AESDCHAR_BUILD_CMDS
-    # Build aesdsocket
-    $(TARGET_CC) $(TARGET_CFLAGS) -DUSE_AESD_CHAR_DEVICE=1 -o $(@D)/server/aesdsocket $(@D)/server/aesdsocket.c -lpthread
-endef
 
 define AESDCHAR_INSTALL_TARGET_CMDS
     
@@ -27,9 +21,6 @@ define AESDCHAR_INSTALL_TARGET_CMDS
     sed -i 's|\./${module}.ko|/lib/modules/$$(uname -r)/extra/${module}.ko|g' $(TARGET_DIR)/usr/bin/aesdchar_load
     sed -i 's|insmod ./$module.ko|insmod /lib/modules/$$(uname -r)/extra/$module.ko|g' $(TARGET_DIR)/usr/bin/aesdchar_load
     
-    # Install built aesdsocket binary and start-stop script
-    $(INSTALL) -D -m 0755 $(@D)/server/aesdsocket $(TARGET_DIR)/usr/bin/aesdsocket
-    $(INSTALL) -D -m 0755 $(@D)/server/aesdsocket-start-stop $(TARGET_DIR)/usr/bin/aesdsocket-start-stop
 endef
 
 $(eval $(kernel-module))
