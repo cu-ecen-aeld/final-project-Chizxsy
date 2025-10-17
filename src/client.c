@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <syslog.h>
 
+#define PORT "54321"
+#define BUFFER_SIZE 1024
+
 
 int send_data(int sockfd, const char *filename){
     char buffer[BUFFER_SIZE];

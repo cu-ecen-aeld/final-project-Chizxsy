@@ -10,6 +10,9 @@
 #include <syslog.h>
 #include <signal.h>
 
+#define PORT "54321"
+#define BUFFER_SIZE 1024
+
 
 static void sigchild_handler(int sig){
     int status;
@@ -20,8 +23,29 @@ static void sigchild_handler(int sig){
 
 }
 
+int send_data(int sockfd, const char *filename){
+    char send_buffer[BUFFER_SIZE];
+    size_t bytes_read;
+
+    FILE *fp = fopen(filename, "rb");
+    if (fp == NULL){
+        syslog(LOG_ERR, "Failed to open file");
+        return -1;
+    }
+
+    while ((bytes_read = fread(send_buffer, 1, sizeof(send_buffer), fp))>0){
+        if (send(sockfd, send_buffer, bytes_read, 0) == -1){
+            syslog(LOG_ERR, "send");
+            fclose(fp);
+            return -1;
+        }
+    }
+    fclose(fp);
+    return 0;
+}
+
 int receive_data(int sockfd, const char *filename){
-     char buffer[BUFFER_SIZE];
+     char recv_buffer[BUFFER_SIZE];
      int bytes_recv;
 
      FILE *fp = fopen(filename, "wb");
@@ -30,8 +54,8 @@ int receive_data(int sockfd, const char *filename){
         return -1;
      }
 
-     while ((bytes_recv = recv(sockfd, buffer, BUFFER_SIZE, 0 ))>0){
-        if ((fwrite(buffer, 1, bytes_recv, fp)) != bytes_recv) {
+     while ((bytes_recv = recv(sockfd, recv_buffer, BUFFER_SIZE, 0 ))>0){
+        if ((fwrite(recv_buffer, 1, bytes_recv, fp)) != bytes_recv) {
             syslog(LOG_ERR, "fwrite");
             fclose(fp);
             return -1;
@@ -112,6 +136,11 @@ int main(int argc, char *argv[]){
 
             close(listen_sockfd);
 
+
+
+
+            /*
+
             char filename[128];
             sprintf(filename, "receivedgcode_%d.gcode", listen_sockfd);
 
@@ -123,6 +152,7 @@ int main(int argc, char *argv[]){
             } else {
                 syslog(LOG_ERR, "Error receiving file");
             }
+            */
 
             close(client_sockfd);
             exit(0);
