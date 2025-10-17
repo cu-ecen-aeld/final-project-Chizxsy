@@ -1,0 +1,6 @@
+*.o
+build/
+.vscode/
+*.log
+assignment5key
+assignment5key.pub

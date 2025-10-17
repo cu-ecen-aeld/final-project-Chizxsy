@@ -1,0 +1,21 @@
+#!/bin/sh
+
+case "$1" in 
+	start)
+		echo "starting kernel modules"
+		modprobe hello
+		modprobe scull
+		modprobe faulty
+	;;
+	stop)
+		echo "stopping kernel modules"
+		rmmod faulty
+		rmmod scull
+		rmmod hello
+	;;
+	*)
+		echo "Usage $0 {start|stop}"
+		exit 1
+	;;
+esac
+exit 0

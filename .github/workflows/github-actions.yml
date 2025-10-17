@@ -1,0 +1,32 @@
+name: assignment-test
+on:
+    push:
+        tags-ignore:
+            - '*'
+        branches:
+            - '*'
+jobs:
+  full-test:
+    container: cuaesd/aesd-autotest:24-assignment7-buildroot
+    runs-on: self-hosted
+    timeout-minutes: 600
+    env:
+      FORCE_UNSAFE_CONFIGURE: 1
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Configure SSH to ignore host key changes
+        run: |
+          mkdir -p $HOME/.ssh
+          echo -e "Host github.com\n  StrictHostKeyChecking accept-new\n  UserKnownHostsFile=/dev/null" >> $HOME/.ssh/config
+      - name: Run full test
+        env:
+          GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        run: ./full-test.sh
+      - name: Cleanup
+        if: always()
+        run: ssh-add -D

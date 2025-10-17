@@ -1,0 +1,4 @@
+config BR2_PACKAGE_AESDCHAR
+        bool "aesdchar"
+        help
+		Loads and unloads aesdchar from kernel space
