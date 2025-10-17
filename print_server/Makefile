@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -g
 
-TARGET = readtest
+TARGET = printer_server
 
-SRCS = readtest.c
+SRCS = printer_server.c port_handler.c bridge.c
 
 # generate object files from source
 OBJS = $(SRCS:.c=.o)

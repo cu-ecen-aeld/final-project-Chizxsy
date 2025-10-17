@@ -20,54 +20,6 @@ static void sigchild_handler(int sig){
 
     while((pid = waitpid(-1, &status, WNOHANG)) > 0);
 
-
-}
-
-int send_data(int sockfd, const char *filename){
-    char send_buffer[BUFFER_SIZE];
-    size_t bytes_read;
-
-    FILE *fp = fopen(filename, "rb");
-    if (fp == NULL){
-        syslog(LOG_ERR, "Failed to open file");
-        return -1;
-    }
-
-    while ((bytes_read = fread(send_buffer, 1, sizeof(send_buffer), fp))>0){
-        if (send(sockfd, send_buffer, bytes_read, 0) == -1){
-            syslog(LOG_ERR, "send");
-            fclose(fp);
-            return -1;
-        }
-    }
-    fclose(fp);
-    return 0;
-}
-
-int receive_data(int sockfd, const char *filename){
-     char recv_buffer[BUFFER_SIZE];
-     int bytes_recv;
-
-     FILE *fp = fopen(filename, "wb");
-     if (fp == NULL){
-        syslog(LOG_ERR, "fopen");
-        return -1;
-     }
-
-     while ((bytes_recv = recv(sockfd, recv_buffer, BUFFER_SIZE, 0 ))>0){
-        if ((fwrite(recv_buffer, 1, bytes_recv, fp)) != bytes_recv) {
-            syslog(LOG_ERR, "fwrite");
-            fclose(fp);
-            return -1;
-        }
-     }
-     if (bytes_recv == -1) {
-        syslog(LOG_ERR, "error reading from file descriptor");
-    }
-
-    fclose(fp);
-    close(bytes_recv);
-
 }
 
 int main(int argc, char *argv[]){
@@ -133,27 +85,8 @@ int main(int argc, char *argv[]){
         if (pid < 0){
             syslog(LOG_ERR, "fork");
         } else if (pid == 0){
-
             close(listen_sockfd);
-
-
-
-
-            /*
-
-            char filename[128];
-            sprintf(filename, "receivedgcode_%d.gcode", listen_sockfd);
-
-            syslog(LOG_INFO, "File saved to %s", filename);
-
-            if (receive_data(client_sockfd, filename) == 0){
-                syslog(LOG_INFO, "File received succesfully");
-                send(client_sockfd, "File received", 14, 0);
-            } else {
-                syslog(LOG_ERR, "Error receiving file");
-            }
-            */
-
+            send(client_sockfd, "Welcome!\n", 9, 0);
             close(client_sockfd);
             exit(0);
         
