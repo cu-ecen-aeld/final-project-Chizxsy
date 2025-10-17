@@ -7,6 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/ioctl.h>
+#include "printer_server.h"
 
 #define BUFFER_SIZE 1024
 
