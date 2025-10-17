@@ -4,7 +4,7 @@
 #
 ##############################################################
 
-AESDCHAR_VERSION = e607d54a534d9ae7fc95f190fe3d089c9a97df1d
+AESDCHAR_VERSION = 2cf2e47fdf1bc9cc6301f198bcdf03a2853a430f
 AESDCHAR_SITE = git@github.com:cu-ecen-aeld/assignments-3-and-later-Chizxsy.git
 AESDCHAR_SITE_METHOD = git
 AESDCHAR_GIT_SUBMODULES = YES
