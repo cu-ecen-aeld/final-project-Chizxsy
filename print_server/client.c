@@ -1,4 +1,3 @@
-#include "tcpclient.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -12,44 +11,6 @@
 #define BUFFER_SIZE 1024
 
 
-int send_data(int sockfd, const char *filename){
-    char buffer[BUFFER_SIZE];
-    size_t bytes_read;
-
-    FILE *fp = fopen(filename, "rb");
-    if (fp == NULL){
-        syslog(LOG_ERR, "Failed to open file");
-        return -1;
-    }
-
-    while ((bytes_read = fread(buffer, 1, sizeof(buffer), fp))>0){
-        if (send(sockfd, buffer, bytes_read, 0) == -1){
-            syslog(LOG_ERR, "send");
-            fclose(fp);
-            return -1;
-        }
-    }
-    fclose(fp);
-    return 0;
-}
-
-int receive_data(int sockfd){
-    char buffer[BUFFER_SIZE];
-    int bytes_recv;
-    // leave room for null terminator
-    while ((bytes_recv = recv(sockfd, buffer, sizeof(buffer) - 1, 0)) > 0){
-        // null terminate bytes recvieved to print
-        buffer[bytes_recv] = '\0';
-        syslog(LOG_INFO, "%s", buffer);
-        }
-
-        if (bytes_recv == -1){
-            syslog(LOG_ERR, "recv");
-            return -1;
-        }
-    
-}
-
 int main(int argc, char *argv[]) {
     int client_sockfd, status; 
     int sockarg;
@@ -58,13 +19,12 @@ int main(int argc, char *argv[]) {
     socklen_t serveraddr_len;
     struct linger opt;
 
-    if (argc != 3) {
+    if (argc != 2) {
         fprintf(stderr, "Usage: %s <hostname> <filepath>\n", argv[0]);
         return -1;
     }
 
     const char *hostname = argv[1];
-    const char *filepath = argv[2];
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -102,16 +62,29 @@ int main(int argc, char *argv[]) {
 
     syslog(LOG_INFO, "Connected to %s\n", hostname);
 
-    if (send_data(client_sockfd, filepath) == 0) {
-        printf("File sent successfully.\n");
-    } else {
-        fprintf(stderr, "Error sending file.\n");
+    char buffer[BUFFER_SIZE];
+
+    while (1) {
+        memset(buffer, 0, BUFFER_SIZE);
+        ssize_t bytes_recv = recv(client_sockfd, buffer, BUFFER_SIZE -1, 0);
+
+        if (bytes_recv > 0){
+            printf("%s", buffer);
+        } else if {
+            syslog(LOG_INFO, "Server disconnected during startup");
+            close(client_sockfd);
+            return -1;
+        }
     }
 
-    shutdown(client_sockfd, SHUT_WR);
-
-    printf("\n--- Waiting for server response ---\n");
-    receive_data(client_sockfd);
+    // printer handling code
+    const char *gcode_cmd = "G28";
+    syslog(LOG_INFO, "Sending %s", gcode_cmd);
+    if (send(client_sockfd, gcode_cmd, strlen(gcode_cmd), 0) < 0) {
+        syslog(LOG_ERR, "send command");
+        close(client_sockfd);
+        return -1;
+    }
 
 
 
