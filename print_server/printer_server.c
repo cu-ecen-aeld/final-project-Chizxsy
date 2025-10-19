@@ -22,6 +22,30 @@ static void sigchild_handler(int sig){
 
 }
 
+int receive_data(int sockfd, const char *filename){
+     char buffer[BUFFER_SIZE];
+     int bytes_recv;
+
+     while ((bytes_recv = recv(sockfd, buffer, BUFFER_SIZE, 0 ))>0){
+        if ((fwrite(buffer, 1, bytes_recv, fp)) != bytes_recv) {
+            syslog(LOG_ERR, "fwrite");
+            fclose(fp);
+            return -1;
+        }
+     }
+     if (bytes_recv == -1) {
+        syslog(LOG_ERR, "error reading from file descriptor");
+    }
+
+    fclose(fp);
+    close(bytes_recv);
+
+}
+
+int send_data(int sockfd, int ttyfd, const char *filename){
+
+}
+
 int main(int argc, char *argv[]){
     int listen_sockfd, client_sockfd = 0;
     struct addrinfo hints, *res;
@@ -29,10 +53,6 @@ int main(int argc, char *argv[]){
     socklen_t addr_size;
     struct sigaction sa;
     pid_t pid;
-
-    //strsignal(SIGCHLD, SIG_IGN);
-
-    openlog("TCP server", LOG_PID, LOG_USER);
 
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
