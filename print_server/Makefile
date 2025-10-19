@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -g
 
 TARGET = main
 
-SRCS = serial_com.c main.c
+SRCS = serial_com.c printer_server.c main.c
 
 # generate object files from source
 OBJS = $(SRCS:.c=.o)

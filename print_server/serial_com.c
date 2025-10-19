@@ -33,10 +33,10 @@ int serial_read(int serial_port, char *buffer, size_t bufsize) {
    // return (read_serial > 0) ? (int)read_serial : -1;
 }
 
-int serial_write(int serial_port, const char *buffer){
+int serial_write(int serial_port, const char *buffer, size_t bufsize){
     printf("---- Serial Write ----\n");
 
-    ssize_t write_serial = write(serial_port, buffer, strlen(buffer));
+    ssize_t write_serial = write(serial_port, buffer, bufsize);
 
     if (write_serial < 0){
         perror("write");

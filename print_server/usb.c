@@ -175,3 +175,63 @@ int main(int argc, char *argv[]){
     return 0;
 
 }
+
+
+/*
+// ---- Read Prusa startup data ----
+    char buffer[BUFFER_SIZE];
+
+    while (1){
+        memset(buffer, 0, sizeof(buffer));
+
+        int read_data = serial_read(serial_port, buffer, sizeof(buffer));
+        if (read_data < 0){
+            syslog(LOG_ERR, "Failed to ready serial_data");
+            return -1;
+        }
+        printf("Printer reponse: %s", buffer);
+
+        if (read_data == 0){
+            syslog(LOG_INFO, "Response received");
+            break;
+        }
+    }
+
+    // ---- Send G28 Home command to printer ----
+    char write_buffer[BUFFER_SIZE];
+    memset(write_buffer, 0, sizeof(write_buffer));
+
+    char* gcode_cmd = "G28";
+
+    snprintf(write_buffer, sizeof(write_buffer), "%s\n", gcode_cmd);
+    syslog(LOG_INFO, "Sending command: %s", gcode_cmd);
+
+    int write_data = serial_write(serial_port, write_buffer);
+    if (write_data < 0){
+        syslog(LOG_ERR, "Failed to write %s to printer", gcode_cmd);
+        close(serial_port);
+        return -1;
+    }
+
+    // ---- Read response from G28 ----
+
+    while (1){
+        memset(buffer, 0, sizeof(buffer));
+
+        int read_data = serial_read(serial_port, buffer, sizeof(buffer));
+        if (read_data < 0){
+            syslog(LOG_ERR, "Failed to read printer response");
+            return -1;
+        }
+
+        if (read_data == 0){
+            syslog(LOG_INFO, "Timmed out");
+            break;
+        }
+
+        if (strstr(buffer, "ok") != NULL){
+            syslog(LOG_INFO, "Success!");
+            break;
+        }
+    }
+*/
